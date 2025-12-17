@@ -1,4 +1,4 @@
-# Logs
+# git ignore for LMS project
 logs
 *.log
 npm-debug.log*
