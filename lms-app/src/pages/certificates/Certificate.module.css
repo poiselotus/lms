@@ -1,0 +1,11 @@
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 20px;
+  cursor: pointer;
+}
