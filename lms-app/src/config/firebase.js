@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Firebase configuration
+// Firebase configuration (USE ENV VARIABLES ONLY)
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,12 +13,9 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-
 if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  console.error(" Firebase environment variables are missing");
-  throw new Error("Firebase config not found. Check your .env file.");
+  throw new Error("Firebase config missing. Check your .env file");
 }
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -28,5 +25,4 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// Exports
 export { app, auth, db, storage };
