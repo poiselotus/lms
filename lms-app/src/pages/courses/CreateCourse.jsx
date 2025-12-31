@@ -52,7 +52,7 @@ const CreateCourse = () => {
 
       // Reset form
       setTitle("");
-      setDescription("");
+      setDescription("")``;
       setCategory("");
       setLevel("");
       setDuration("");
