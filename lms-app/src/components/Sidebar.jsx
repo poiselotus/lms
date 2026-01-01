@@ -8,6 +8,8 @@ import paper from "../images/paper.png";
 import schedule from "../images/schedule.png";
 import setting from "../images/setting.png";
 import chat from "../images/chat.png";
+import { NavLink } from "react-router-dom";
+
 
 export default function Sidebar() { const [open, setOpen] = useState(true)
 
@@ -28,14 +30,37 @@ return (
         </div>
 
         <nav className={styles.nav}>
-            <a className={styles.active}><img src={home} alt="home" className={styles.icons} />Home</a>
-            
-            <a><img src={onlinelearning} alt="courses" className={styles.icons} />My Courses</a>
-            <a><img src={paper} alt="paper" className={styles.icons} />Assignments</a>
-            <a><img src={schedule} alt="schedule" className={styles.icons} />Time Table</a>
-            <a><img src={chat} alt="chat" className={styles.icons} />Forum</a>
-            <a><img src={setting} alt="setting" className={styles.icons} />Settings</a>
+            <NavLink to="/" className={styles.active}>
+                <img src={home} className={styles.icons} />
+                Home
+            </NavLink>
+
+            <NavLink to="/courses">
+                <img src={onlinelearning} className={styles.icons} />
+                My Courses
+            </NavLink>
+
+            <NavLink to="/assignments">
+                <img src={paper} className={styles.icons} />
+                Assignments
+            </NavLink>
+
+            <NavLink to="/timetable">
+                <img src={schedule} className={styles.icons} />
+                Time Table
+            </NavLink>
+
+            <NavLink to="/forum">
+                <img src={chat} className={styles.icons} />
+                Forum
+            </NavLink>
+
+            <NavLink to="/settings">
+                <img src={setting} className={styles.icons} />
+                Settings
+            </NavLink>
         </nav>
+
     </aside>
 
 ) }

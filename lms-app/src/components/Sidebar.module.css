@@ -78,6 +78,7 @@
     background: #C2E8F8;
     color: #000;
     border-radius: 10px;
+    text-decoration: none;
 }
 
 .closed .nav a {
@@ -102,9 +103,9 @@
 }
 
 
-.active { 
-    background: #bfe9f5; 
-    color: #000; 
+.nav a.active {
+    background: #bfe9f5;
+    color: #000;
 }
 
 .icons {
