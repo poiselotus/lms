@@ -1,22 +1,28 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase configuration (USE ENV VARIABLES ONLY)
 const firebaseConfig = {
-  apiKey: "AIzaSyC22g19WYuxpysNSWOSMBWWji6jzr-NLe4",
-  authDomain: "lms-app-6745e.firebaseapp.com",
-  projectId: "lms-app-6745e",
-  storageBucket: "lms-app-6745e.firebasestorage.app",
-  messagingSenderId: "443102390442",
-  appId: "1:443102390442:web:635ce27bca18211af1c8d3",
-  measurementId: "G-3Y9LGYSKP0"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  throw new Error("Firebase config missing. Check your .env file");
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Services
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { app, auth, db };
+export { app, auth, db, storage };
