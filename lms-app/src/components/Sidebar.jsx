@@ -23,7 +23,7 @@ return (
         <div className={styles.profile}>
             <img src={profile1} alt="avatar" className={styles.avatar} />
             <div className={styles.info}>
-                <p className={styles.name} >Hi, Alex</p>
+                <p className={styles.name} >Hi, Vanessa</p>
                 <small className={styles.id}>E173037</small>
             </div>
                 
