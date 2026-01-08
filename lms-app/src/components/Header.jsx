@@ -7,7 +7,7 @@ export default function Header() {
         <header className={styles.header}>
         <div className={styles.text}>
             <h1>Dashboard</h1>
-            <p>Welcome Back, Alex</p>
+            <p>Welcome Back, Vanessa</p>
         </div>
 
         <div className={styles.icons}>
