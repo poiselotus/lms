@@ -23,35 +23,42 @@ export function AuthProvider({ children }) {
 
   async function initializeUser(user) {
     setLoading(true);
+
     if (user) {
-      // basic auth user
-      setCurrentUser({
+      // Firebase Auth basic user
+      const authUser = {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName || null,
-      });
+        displayName: user.displayName || "",
+        photoURL: user.photoURL || "", 
+      };
+
+      setCurrentUser(authUser);
       setUserLoggedIn(true);
 
       try {
-        // try to load profile from Firestore `users/{uid}`
+        // Load profile from Firestore
         const doc = await getDocument("users", user.uid);
+
         if (doc) {
           setProfile(doc);
         } else {
-          // create a minimal profile if none exists
+          // Create profile if it does not exist
           const newProfile = {
             uid: user.uid,
-            name: user.displayName || "",
+            fullName: user.displayName || "",
+            email: user.email || "",
+            photoURL: user.photoURL || "",
             role: "student",
             enrolledCourses: [],
-            email: user.email || "",
             createdAt: new Date().toISOString(),
           };
+
           await setDocument("users", user.uid, newProfile);
           setProfile(newProfile);
         }
       } catch (err) {
-        console.warn("failed to load/create user profile", err);
+        console.warn("Failed to load/create user profile", err);
         setProfile(null);
       }
     } else {
@@ -63,17 +70,19 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }
 
+  //LOGOUT
   async function signOut() {
     await doSignOut();
   }
 
   const value = {
-    currentUser,
-    profile,
+    currentUser,   // auth data
+    profile,       
     userLoggedIn,
     loading,
-    signOut,
+    signOut,       
   };
+
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}

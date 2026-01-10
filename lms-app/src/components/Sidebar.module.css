@@ -114,6 +114,12 @@
     margin-right: 15px;
 }
 
+.logoutBtn {
+    margin-top: 120px;
+    background: none;
+    border: 2px solid ;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         width: 80px;

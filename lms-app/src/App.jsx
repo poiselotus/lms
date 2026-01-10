@@ -9,8 +9,6 @@ import Dashboard from "./pages/Dashboard";
 import CreateCourse from "./pages/courses/CreateCourse";
 import CourseList from "./pages/courses/CourseList";
 import GenerateCertificate from "./pages/certificates/GenerateCertificate";
-import StudentProgress from "./pages/StudentProgress";
-
 import { useAuth } from "./context/authContext";
 
 function ProtectedRoute({ children }) {
