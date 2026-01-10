@@ -18,9 +18,10 @@ export default function SignIn() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
     try {
       await doSignInWithEmailAndPassword(email, password);
-      navigate("/");
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err.message || "Failed to sign in");
     } finally {
@@ -31,9 +32,10 @@ export default function SignIn() {
   const googleSignIn = async () => {
     setError(null);
     setLoading(true);
+
     try {
       await doSignInWithGoogle();
-      navigate("/");
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err.message || "Google sign in failed");
     } finally {

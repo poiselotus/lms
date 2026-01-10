@@ -1,66 +1,100 @@
-import { useState } from 'react' 
-import styles from './Sidebar.module.css'
+import { useState } from "react";
+import styles from "./Sidebar.module.css";
 import oxfordtrans1 from "../images/oxfordtrans1.png";
-import profile1 from "../images/profile1.png";
-import home from "../images/home.png";
-import onlinelearning from "../images/onlinelearning.png";
-import paper from "../images/paper.png";
-import schedule from "../images/schedule.png";
-import setting from "../images/setting.png";
-import chat from "../images/chat.png";
+import homeIcon from "../images/home.png";
+import onlineLearningIcon from "../images/onlinelearning.png";
+import paperIcon from "../images/paper.png";
+import scheduleIcon from "../images/schedule.png";
+import settingIcon from "../images/setting.png";
+import chatIcon from "../images/chat.png";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 
+export default function Sidebar() {
+    const [open, setOpen] = useState(true);
+    const { profile, loading } = useAuth();
 
-export default function Sidebar() { const [open, setOpen] = useState(true)
+    if (loading) return null;
 
-return ( 
-    <aside className={`${styles.sidebar} ${!open ? styles.closed : ''}`}>
-        <div className={styles.top}> 
-            <img src={oxfordtrans1} alt="Oxford Logo" className={styles.logo}/> 
-            <button onClick={() => setOpen(!open)} className={styles.hamburger}> ☰ </button> 
+    const displayName = profile?.name ? profile.name.split(" ")[0] : "Student";
+
+    const profilePic = profile?.avatar || "https://via.placeholder.com/150";
+
+    return (
+        <aside className={`${styles.sidebar} ${!open ? styles.closed : ""}`}>
+        <div className={styles.top}>
+            <img src={oxfordtrans1} alt="Oxford Logo" className={styles.logo} />
+            <button onClick={() => setOpen(!open)} className={styles.hamburger}>
+            ☰
+            </button>
         </div>
 
+        {/* User profile */}
         <div className={styles.profile}>
-            <img src={profile1} alt="avatar" className={styles.avatar} />
+            <img src={profilePic} alt="avatar" className={styles.avatar} />
             <div className={styles.info}>
-                <p className={styles.name} >Hi, Vanessa</p>
-                <small className={styles.id}>E173037</small>
+            <p className={styles.name}>Hi, {displayName}</p>
+            <small className={styles.id}>{profile?.studentId || "N/A"}</small>
             </div>
-                
         </div>
 
+        {/* Navigation */}
         <nav className={styles.nav}>
-            <NavLink to="/" className={styles.active}>
-                <img src={home} className={styles.icons} />
-                Home
+            <NavLink
+            to="/dashboard"
+            className={({ isActive }) => (isActive ? styles.active : styles.link)}
+            >
+            <img src={homeIcon} className={styles.icons} />
+            Home
             </NavLink>
 
-            <NavLink to="/courses">
-                <img src={onlinelearning} className={styles.icons} />
-                My Courses
+            <NavLink
+            to="/courses"
+            className={({ isActive }) => (isActive ? styles.active : styles.link)}
+            >
+            <img src={onlineLearningIcon} className={styles.icons} />
+            My Courses
             </NavLink>
 
-            <NavLink to="/assignments">
-                <img src={paper} className={styles.icons} />
-                Assignments
+            <NavLink
+            to="/assignments"
+            className={({ isActive }) => (isActive ? styles.active : styles.link)}
+            >
+            <img src={paperIcon} className={styles.icons} />
+            Assignments
             </NavLink>
 
-            <NavLink to="/timetable">
-                <img src={schedule} className={styles.icons} />
-                Time Table
+            <NavLink
+            to="/timetable"
+            className={({ isActive }) => (isActive ? styles.active : styles.link)}
+            >
+            <img src={scheduleIcon} className={styles.icons} />
+            Time Table
             </NavLink>
 
-            <NavLink to="/forum">
-                <img src={chat} className={styles.icons} />
-                Forum
+            <NavLink
+            to="/forum"
+            className={({ isActive }) => (isActive ? styles.active : styles.link)}
+            >
+            <img src={chatIcon} className={styles.icons} />
+            Forum
             </NavLink>
 
-            <NavLink to="/settings">
-                <img src={setting} className={styles.icons} />
-                Settings
+            <NavLink
+            to="/settings"
+            className={({ isActive }) => (isActive ? styles.active : styles.link)}
+            >
+            <img src={settingIcon} className={styles.icons} />
+            Settings
+            </NavLink>
+
+            <NavLink
+            to="/student-progress"
+            className={({ isActive }) => (isActive ? styles.active : styles.link)}
+            >
+            Student Progress
             </NavLink>
         </nav>
-
-    </aside>
-
-) }
+        </aside>
+    );
+}

@@ -6,34 +6,102 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 
 import Dashboard from "./pages/Dashboard";
-
 import CreateCourse from "./pages/courses/CreateCourse";
 import CourseList from "./pages/courses/CourseList";
 import GenerateCertificate from "./pages/certificates/GenerateCertificate";
+import StudentProgress from "./pages/StudentProgress";
+
+import { useAuth } from "./context/authContext";
+
+function ProtectedRoute({ children }) {
+  const { profile, loading } = useAuth();
+
+  if (loading) return null; // wait until auth finishes
+  if (!profile) return <Navigate to="/signin" replace />; // redirect if not logged in
+
+  return children;
+}
+
+function PublicRoute({ children }) {
+  const { profile, loading } = useAuth();
+
+  if (loading) return null; // wait until auth finishes
+  if (profile) return <Navigate to="/dashboard" replace />; // redirect if already logged in
+
+  return children;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Auth */}
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-
-        {/* Main */}
-        <Route path="/dashboard" element={<Dashboard />} />
-
-        {/* Courses */}
-        <Route path="/courses" element={<CourseList />} />
-        <Route path="/courses/create" element={<CreateCourse />} />
-
-        {/* Certificates */}
         <Route
-          path="/certificates/:courseId"
-          element={<GenerateCertificate />}
+          path="/signin"
+          element={
+            <PublicRoute>
+              <SignIn />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignUp />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
         />
 
-        {/* Default */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courses"
+          element={
+            <ProtectedRoute>
+              <CourseList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courses/create"
+          element={
+            <ProtectedRoute>
+              <CreateCourse />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/certificates/:courseId"
+          element={
+            <ProtectedRoute>
+              <GenerateCertificate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-progress"
+          element={
+            <ProtectedRoute>
+              <StudentProgress />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* --- Default --- */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
