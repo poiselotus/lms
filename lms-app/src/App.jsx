@@ -92,14 +92,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/student-progress"
-          element={
-            <ProtectedRoute>
-              <StudentProgress />
-            </ProtectedRoute>
-          }
-        />
 
         {/* --- Default --- */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

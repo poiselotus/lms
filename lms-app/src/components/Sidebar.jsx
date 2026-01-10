@@ -87,13 +87,6 @@ export default function Sidebar() {
             <img src={settingIcon} className={styles.icons} />
             Settings
             </NavLink>
-
-            <NavLink
-            to="/student-progress"
-            className={({ isActive }) => (isActive ? styles.active : styles.link)}
-            >
-            Student Progress
-            </NavLink>
         </nav>
         </aside>
     );
