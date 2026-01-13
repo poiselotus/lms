@@ -1,13 +1,20 @@
-import styles from './Header.module.css'
-import notification from "../images/notification.png"
-import message from "../images/message.png"
+import styles from "./Header.module.css";
+import notification from "../images/notification.png";
+import message from "../images/message.png";
+import { useAuth } from "../context/authContext";
 
 export default function Header() {
+    const { profile, loading } = useAuth();
+
+    if (loading) return null; // wait until auth finishes
+
+    const fullName = profile?.fullName || profile?.name || "Student";
+
     return (
         <header className={styles.header}>
         <div className={styles.text}>
             <h1>Dashboard</h1>
-            <p>Welcome Back, Vanessa</p>
+            <p>Welcome, {fullName}</p>
         </div>
 
         <div className={styles.icons}>
@@ -15,5 +22,5 @@ export default function Header() {
             <img src={message} alt="message" />
         </div>
         </header>
-    )
+    );
 }
