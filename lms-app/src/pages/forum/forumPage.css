@@ -1,0 +1,88 @@
+forum-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.forum-main {
+  display: flex;
+  flex: 1;
+  background: #f4f6fa;
+}
+
+/* CHAT LIST */
+.chat-list {
+  width: 280px;
+  background: #fff;
+  padding: 15px;
+  border-right: 1px solid #ddd;
+}
+
+.chat-search {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+}
+
+.chat-item {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.chat-item:hover {
+  background: #eee;
+}
+
+/* CHAT WINDOW */
+.chat-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 15px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.message {
+  max-width: 60%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.message.me {
+  background: #6c5ce7;
+  color: #fff;
+  margin-left: auto;
+}
+
+.message.other {
+  background: #e5e5ea;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px;
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 8px;
+}
+
+.chat-input button {
+  margin-left: 10px;
+  padding: 8px 15px;
+}
