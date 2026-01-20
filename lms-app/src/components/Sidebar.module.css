@@ -6,25 +6,29 @@
     border-radius: 20px; 
     margin: 15px; 
     transition: width 0.3s ease;
-    
+    overflow: hidden;
 }
 
+/* Logo */
 .logo{
     width: 100px;
     height: auto;
     object-fit: contain;
 }
 
+/* Collapsed sidebar */
 .closed { 
     width: 80px; 
 }
 
+/* Top bar */
 .top { 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
 }
 
+/* Hamburger */
 .hamburger { 
     background: none; 
     border: none; 
@@ -33,6 +37,7 @@
     cursor: pointer; 
 }
 
+/* Profile section */
 .profile {
     display: flex;
     align-items: center;   
@@ -43,13 +48,16 @@
     padding: 15px;
 }
 
+/* Avatar */
 .avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
+/* Profile text */
 .info {
     display: flex;
     flex-direction: column;  
@@ -70,6 +78,12 @@
     margin-top: 4px;
 }
 
+/* Hide text when collapsed */
+.closed .info {
+    display: none;
+}
+
+/* Navigation */
 .nav a {
     display: flex;
     align-items: center;
@@ -81,31 +95,11 @@
     text-decoration: none;
 }
 
+/* Nav when collapsed */
 .closed .nav a {
     justify-content: center;
     padding: 12px 0;
     font-size: 0;
-}
-
-.closed .icons {
-    font-size: initial;
-    margin-right: 0;
-}
-
-.closed .profile {
-    justify-content: center;
-    padding: 10px;
-    display: none;
-}
-
-.closed .logo {
-    display: none;
-}
-
-
-.nav a.active {
-    background: #bfe9f5;
-    color: #000;
 }
 
 .icons {
@@ -114,12 +108,28 @@
     margin-right: 15px;
 }
 
-.logoutBtn {
-    margin-top: 120px;
-    background: none;
-    border: 2px solid ;
+.closed .icons {
+    margin-right: 0;
 }
 
+/* Active link */
+.nav a.active {
+    background: #bfe9f5;
+    color: #000;
+}
+
+/* Logout button */
+.logoutBtn {
+    margin-top: auto;
+    background: none;
+    border: 2px solid #bfe9f5;
+    color: #bfe9f5;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* Mobile */
 @media (max-width: 768px) {
     .sidebar {
         width: 80px;
