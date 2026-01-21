@@ -1,7 +1,11 @@
 import React from "react";
+// Change from ../../ to ../
+import { useAuth } from "../context/authContext"; 
 import styles from "./StudentProgress.module.css";
 
 export default function StudentProgress() {
+  const { profile } = useAuth();
+
   const modules = [
     { name: "Diploma in English", progress: 80 },
     { name: "Diploma in IT", progress: 70 },
@@ -14,61 +18,49 @@ export default function StudentProgress() {
     { title: "Assignment 3", status: "Pending (Due 20 Jan)" },
   ];
 
+  const totalAvg = modules.length > 0 
+    ? Math.round(modules.reduce((acc, m) => acc + m.progress, 0) / modules.length) 
+    : 0;
+
   return (
     <div className={styles.container}>
-      <h2 className={styles.header}>Student Progress</h2>
-      <p className={styles.welcome}>Hi Alex 👋, here’s your current progress overview.</p>
+      <h2 className={styles.header}>Learning Progress</h2>
+      <p className={styles.welcome}>
+        Hi {profile?.displayName || profile?.name || "Student"} 👋, here’s your academic overview.
+      </p>
 
-      {/* Overall Progress */}
+      {/* 1. Overall Progress */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>Overall Course Completion</div>
         <div className={styles.progressBar}>
-          <div className={styles.progress} style={{ width: "65%" }}></div>
+          <div className={styles.progress} style={{ width: `${totalAvg}%` }}></div>
         </div>
-        <span className={styles.progressText}>65% Complete</span>
+        <span className={styles.progressText}>{totalAvg}% Complete</span>
       </div>
 
-      {/* Modules */}
+      {/* 2. Modules Breakdown */}
       <div className={styles.card}>
-        <div className={styles.cardHeader}>Modules</div>
+        <div className={styles.cardHeader}>Module Breakdown</div>
         {modules.map((mod) => (
           <div key={mod.name} className={styles.module}>
-            <p className={styles.moduleName}>{mod.name}</p>
+            <p style={{ margin: 0, fontWeight: 500 }}>{mod.name}</p>
             <div className={styles.progressBar}>
-              <div
-                className={styles.progress}
-                style={{ width: `${mod.progress}%` }}
-              ></div>
+              <div className={styles.progress} style={{ width: `${mod.progress}%` }}></div>
             </div>
             <span className={styles.progressText}>{mod.progress}%</span>
           </div>
         ))}
       </div>
 
-      {/* Assignments */}
+      {/* 3. Assignment Status */}
       <div className={styles.card}>
-        <div className={styles.cardHeader}>Assignments</div>
-        {assignments.map((a) => (
-          <div key={a.title} className={styles.assignment}>
-            <p className={styles.assignmentTitle}>{a.title}</p>
+        <div className={styles.cardHeader}>Assignments & Tasks</div>
+        {assignments.map((a, index) => (
+          <div key={index} className={styles.assignment}>
+            <p style={{ margin: 0, fontSize: '0.95rem' }}>{a.title}</p>
             <span className={styles.status}>{a.status}</span>
           </div>
         ))}
-      </div>
-
-      {/* Attendance */}
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>Attendance</div>
-        <div className={styles.progressBar}>
-          <div className={styles.progress} style={{ width: "95%" }}></div>
-        </div>
-        <span className={styles.progressText}>95% Attendance</span>
-      </div>
-
-      {/* Next Steps */}
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>Next Steps</div>
-        <p>Complete HND in Computing module and submit pending assignments.</p>
       </div>
     </div>
   );

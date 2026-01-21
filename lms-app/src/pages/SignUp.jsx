@@ -1,104 +1,137 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styles from "./SignUp.module.css";
-import {
-  doCreateWithEmailAndPassword,
-  doUpdateProfile,
-  doSendEmailVerification,
-} from "../config/auth";
-import { setDocument } from "../config/firestore";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../context/authContext";
+import { doCreateUserWithEmailAndPassword, doSignInWithGoogle } from "../config/auth";
+import styles from "./SignIn.module.css"; // Reusing your SignIn styles for consistency
 import logo from "../images/oxfordtrans1.png";
 
-export default function SignUp() {
+export default function Signup() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const { userLoggedIn, profile } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false);
 
-  const submit = async (e) => {
+  // Redirect if already logged in and profile exists
+  useEffect(() => {
+    if (userLoggedIn && profile) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [userLoggedIn, profile, navigate]);
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      const result = await doCreateWithEmailAndPassword(email, password);
-      // create a user profile document in Firestore
-      try {
-        const user = result.user;
-        await setDocument("users", user.uid, {
-          uid: user.uid,
-          email: user.email,
-          displayName: username || user.displayName || "",
-          createdAt: new Date().toISOString(),
-        });
-      } catch (fErr) {
-        console.warn("failed to write user profile to firestore", fErr);
-      }
-      try {
-        await doUpdateProfile({ displayName: username });
-      } catch (uErr) {
-        // non-fatal - profile update may fail if currentUser not yet available
-        console.warn("update profile failed", uErr);
-      }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
 
+    if (!isRegistering) {
+      setIsRegistering(true);
       try {
-        await doSendEmailVerification();
-      } catch (vErr) {
-        console.warn("send verification failed", vErr);
+        // MATCHED: Named to match the export in auth.js
+        await doCreateUserWithEmailAndPassword(email, password);
+        toast.success("Account created! Welcome to Oxford.");
+        // The authContext will catch the new user and create the Firestore profile
+      } catch (error) {
+        toast.error(error.message);
+        setIsRegistering(false);
       }
+    }
+  };
 
-      navigate("/signin");
-    } catch (err) {
-      setError(err.message || "Failed to create account");
-    } finally {
-      setLoading(false);
+  const onGoogleSignIn = async (e) => {
+    e.preventDefault();
+    if (!isRegistering) {
+      setIsRegistering(true);
+      try {
+        await doSignInWithGoogle();
+      } catch (error) {
+        toast.error("Google Sign up failed");
+        setIsRegistering(false);
+      }
     }
   };
 
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <img src={logo} alt="logo" className={styles.logo} />
-        <h2 className={styles.title}>Signup Your Account</h2>
+        <img src={logo} alt="Oxford Academy" className={styles.logo} />
+        <h2 className={styles.title}>Create your Account</h2>
+        <p className={styles.subtitle}>Join the Oxford Scholar community</p>
 
-        <form onSubmit={submit} className={styles.form}>
-          <label className={styles.label}>Username</label>
-          <input
-            className={styles.input}
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+        <form onSubmit={onSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Email Address</label>
+            <input
+              type="email"
+              className={styles.input}
+              placeholder="name@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isRegistering}
+            />
+          </div>
 
-          <label className={styles.label}>Email</label>
-          <input
-            className={styles.input}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Password</label>
+            <input
+              type="password"
+              className={styles.input}
+              placeholder="Min 6 characters"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isRegistering}
+            />
+          </div>
 
-          <label className={styles.label}>Password</label>
-          <input
-            className={styles.input}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Confirm Password</label>
+            <input
+              type="password"
+              className={styles.input}
+              placeholder="Repeat your password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={isRegistering}
+            />
+          </div>
 
-          {error && <div className={styles.error}>{error}</div>}
+          <button
+            type="submit"
+            disabled={isRegistering}
+            className={styles.primary}
+          >
+            {isRegistering ? "Creating Account..." : "Sign Up"}
+          </button>
 
-          <button className={styles.primary} type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Sign Up"}
+          <div className={styles.divider}>
+            <span>OR</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={onGoogleSignIn}
+            disabled={isRegistering}
+            className={styles.googleButton}
+          >
+            <img 
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+              alt="G" 
+              style={{ width: '18px', marginRight: '10px' }} 
+            />
+            Sign up with Google
           </button>
         </form>
 
         <p className={styles.footerText}>
-          Already have an account? <Link to="/signin">Sign in</Link>
+          Already have an account? <Link to="/login">Sign In</Link>
         </p>
       </div>
     </div>

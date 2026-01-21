@@ -1,8 +1,28 @@
 .box { 
     background: #061a3a; 
     color: #fff; 
-    padding: 20px; 
+    padding: 18px 24px; 
     border-radius: 16px; 
     display: flex; 
     justify-content: space-between; 
+    align-items: center; /* Vertical centering */
+    transition: transform 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Subtle border for depth */
+}
+
+.box:hover {
+    transform: translateX(5px); /* Gentle slide effect on hover */
+    background: #09244d; /* Slightly lighter on hover */
+}
+
+.box span:first-child {
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.box span:last-child {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #34d399; /* A soft emerald green for the value/percentage */
 }

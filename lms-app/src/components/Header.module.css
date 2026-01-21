@@ -1,34 +1,131 @@
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #eef5f5; 
-    padding: 20px 30px;
-    border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #eef5f5;
+  padding: 20px 30px;
+  border-radius: 10px;
 }
 
 .text h1 {
-    margin: 0;
-    font-size: 30px;
-    font-weight: 900;
-    color: #00173D;
+  margin: 0;
+  font-size: 30px;
+  font-weight: 900;
+  color: #00173d;
 }
 
 .text p {
-    margin: 5px 0 0;
-    font-size: 25px;
-    margin-top: 20px;
-    font-weight: bold;
-    color: #00173D;
+  margin: 5px 0 0;
+  font-size: 25px;
+  margin-top: 20px;
+  font-weight: bold;
+  color: #00173d;
+}
+
+.role {
+  display: block;
+  font-size: 14px;
+  color: #555;
+  margin-top: 8px;
+  font-weight: normal;
 }
 
 .icons {
-    display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
 .icons img {
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.profileMenu {
+  position: relative;
+}
+
+.profileBtn {
+  background: none;
+  border: 2px solid #00173d;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.profileBtn:hover {
+  background: #00173d;
+  color: white;
+  transform: scale(1.05);
+}
+
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  z-index: 1000;
+  padding: 12px 0;
+}
+
+.profileInfo {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.profileInfo p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.profileInfo p:first-child {
+  font-weight: bold;
+  color: #00173d;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.email {
+  font-size: 12px !important;
+  color: #999 !important;
+  margin-bottom: 8px !important;
+}
+
+.roleTag {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #00173d;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: capitalize;
+}
+
+.logoutBtn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #ff6b6b;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.logoutBtn:hover {
+  background: #ff5252;
 }

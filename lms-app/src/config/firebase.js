@@ -3,27 +3,35 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Firebase configuration (USE ENV VARIABLES ONLY)
+/**
+ * FIREBASE CONFIGURATION
+ * Using import.meta.env to pull values from your .env file.
+ * This keeps your keys out of your source code and GitHub.
+ */
 const firebaseConfig = {
-  apiKey: "AIzaSyC22g19WYuxpysNSWOSMBWWji6jzr-NLe4",
-  authDomain: "lms-app-6745e.firebaseapp.com",
-  projectId: "lms-app-6745e",
-  storageBucket: "lms-app-6745e.firebasestorage.app",
-  messagingSenderId: "443102390442",
-  appId: "1:443102390442:web:635ce27bca18211af1c8d3",
-  measurementId: "G-3Y9LGYSKP0"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  throw new Error("Firebase config missing. Check your .env file");
-}
-
-// Initialize Firebase
+// 1. Initialize the Firebase App
 const app = initializeApp(firebaseConfig);
 
-// Services
+// 2. Initialize Services
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+/**
+ * POPUP STABILITY FIX:
+ * Ensures the auth service uses the proper domain handler on localhost.
+ */
+if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+  auth.config.authDomain = firebaseConfig.authDomain;
+}
+
+// 3. Export for use throughout the app
 export { app, auth, db, storage };

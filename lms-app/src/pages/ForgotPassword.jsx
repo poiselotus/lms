@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 import styles from "./SignIn.module.css";
 import { doPasswordReset } from "../config/auth";
 import logo from "../images/oxfordtrans1.png";
@@ -6,18 +7,23 @@ import { Link } from "react-router-dom";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
-    setStatus(null);
+
+    if (!email.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+
     setLoading(true);
     try {
       await doPasswordReset(email);
-      setStatus("Password reset email sent. Check your inbox.");
+      toast.success("Password reset email sent. Check your inbox.");
     } catch (err) {
-      setStatus(err.message || "Failed to send reset email");
+      const errorMsg = err.message || "Failed to send reset email";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -38,8 +44,6 @@ export default function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-
-          {status && <div className={styles.error}>{status}</div>}
 
           <button className={styles.primary} type="submit" disabled={loading}>
             {loading ? "Sending..." : "Send reset email"}

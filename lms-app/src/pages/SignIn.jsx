@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import styles from "./SignIn.module.css";
 import {
   doSignInWithEmailAndPassword,
@@ -12,32 +13,39 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const submit = async (e) => {
     e.preventDefault();
-    setError(null);
+
+    if (!email.trim() || !password) {
+      toast.error("Email and password are required");
+      return;
+    }
+
     setLoading(true);
 
     try {
       await doSignInWithEmailAndPassword(email, password);
+      toast.success("Signed in successfully!");
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err.message || "Failed to sign in");
+      const errorMsg = err.message || "Failed to sign in";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   const googleSignIn = async () => {
-    setError(null);
     setLoading(true);
 
     try {
       await doSignInWithGoogle();
+      toast.success("Signed in with Google successfully!");
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err.message || "Google sign in failed");
+      const errorMsg = err.message || "Google sign in failed";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -76,8 +84,6 @@ export default function SignIn() {
               Forgot Password?
             </Link>
           </div>
-
-          {error && <div className={styles.error}>{error}</div>}
 
           <button className={styles.primary} type="submit" disabled={loading}>
             {loading ? "Signing..." : "Sign In"}

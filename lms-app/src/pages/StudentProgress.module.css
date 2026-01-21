@@ -1,64 +1,80 @@
 .container {
-  padding: 20px;
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
 }
 
 .header {
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
+  color: #00173d; /* Dark Oxford Blue */
 }
 
 .welcome {
-  color: #4b5563;
+  color: #64748b;
   font-size: 16px;
-  margin-bottom: 10px;
+  margin-top: -15px;
 }
 
-/* Card style to match dashboard */
 .card {
-  background: #f1f5f9;
-  padding: 15px 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background: #ffffff;
+  padding: 20px 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* Progress bars */
+.cardHeader {
+  font-weight: 700;
+  color: #0b6a6f; /* Teal accent */
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
 .progressBar {
-  background: #e5e7eb;
-  height: 15px;
-  border-radius: 10px;
-  position: relative;
-  margin: 5px 0;
+  background: #f1f5f9;
+  height: 12px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 8px 0;
 }
 
 .progress {
-  background: #1e40af;
+  background: linear-gradient(90deg, #0b6a6f, #34d399); /* Teal to Emerald Gradient */
   height: 100%;
-  border-radius: 10px;
+  border-radius: 20px;
+  transition: width 1s ease-in-out;
 }
 
-/* Module list */
-.module {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+.progressText {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  align-self: flex-end;
 }
 
-/* Assignments */
 .assignment {
   display: flex;
   justify-content: space-between;
-  padding: 8px 10px;
-  background: #fff;
-  border-radius: 8px;
+  align-items: center;
+  padding: 12px 15px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 4px solid #0b6a6f;
+  margin-bottom: 5px;
 }
 
 .status {
-  font-weight: 600;
-  color: #1e40af;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #061a3a;
+  background: #e0f2f1;
+  padding: 4px 10px;
+  border-radius: 6px;
 }

@@ -1,41 +1,42 @@
-import styles from './Dashboard.module.css' 
-import Sidebar from '../components/Sidebar' 
-import Header from '../components/Header' 
-import Card from '../components/Card' 
-import Progress from '../components/Progress'
-import banner from "../images/banner.png"
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
+import styles from "./Dashboard.module.css";
 
-export default function Dashboard() { 
-    return (  
-        <div className={styles.container}> 
-        <Sidebar />
+export default function Dashboard() {
+  const { profile, isTeacher } = useAuth();
+  const navigate = useNavigate();
 
-        <main className={styles.main}>
-            <Header />
+  return (
+    <div className={styles.container}>
+      <header className={styles.welcomeHeader}>
+        <h1>Welcome back, {profile?.name?.split(" ")[0] || "User"}!</h1>
+        <p>Logged in as: <strong>{profile?.role || "Student"}</strong></p>
+      </header>
 
-            <div className={styles.wrapper}>
-                <img
-                    src={banner}
-                    alt="Oxford Biology PhD Scholarship"
-                    className={styles.banner}
-                />
-            </div>
+      {/* Teacher Action Section */}
+      {isTeacher && (
+        <section className={styles.teacherPanel}>
+          <div className={styles.actionCard}>
+            <h3>Course Management</h3>
+            <p>Ready to upload a new curriculum?</p>
+            <button 
+              className={styles.createBtn} 
+              onClick={() => navigate("/create-course")}
+            >
+              ➕ Create New Course
+            </button>
+          </div>
+        </section>
+      )}
 
-            <section className={styles.cards}>
-                <Card title="Diploma in English" code="OXF/ENG/01" />
-                <Card title="Diploma in IT" code="OXF/DIT/01" />
-                <Card title="HND in Computing" code="OXF/HND/01" />
-            </section>
-
-            <section className={styles.progressGrid}>
-                <Progress label="Module Progress" value="90%" />
-                <Progress label="Assignment Progress" value="10%" />
-                <Progress label="Attendance Progress" value="97%" />
-                <Progress label="Course Progress" value="50%" />
-            </section>
-        </main>
+      <section className={styles.coursesSection}>
+        <h2>My Enrolled Courses</h2>
+        <div className={styles.grid}>
+          <p>No active enrollments found.</p>
+          <Link to="/all-courses" className={styles.browseLink}>Browse Catalog</Link>
+        </div>
+      </section>
     </div>
-
-    ) 
-
+  );
 }

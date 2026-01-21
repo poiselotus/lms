@@ -1,67 +1,65 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, db, storage } from "../../config/firebase";
+import { db } from "../../config/firebase";
 import { COLLECTIONS } from "../../config/firestoreCollections";
+import { useAuth } from "../../context/authContext";
+import { toast } from "react-hot-toast";
 import styles from "./Course.module.css";
 
 const CreateCourse = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [level, setLevel] = useState("");
-  const [duration, setDuration] = useState("");
-  const [image, setImage] = useState(null);
+  const { profile } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    category: "Information Technology",
+    level: "Diploma",
+    duration: ""
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!auth.currentUser) {
-      alert("You must be logged in to create a course");
-      return;
-    }
-
-    if (!title || !description || !category || !level || !duration) {
-      alert("Please fill all fields");
+    
+    // Safety check to ensure the user is logged in
+    if (!profile) {
+      toast.error("You must be logged in as a teacher to publish.");
       return;
     }
 
     setLoading(true);
 
     try {
-      // Upload image if exists
-      let imageUrl = "";
-      if (image) {
-        const storageRef = ref(storage, `courses/${Date.now()}_${image.name}`);
-        const snapshot = await uploadBytes(storageRef, image);
-        imageUrl = await getDownloadURL(snapshot.ref);
-      }
+      // 1. Define a default placeholder image URL 
+      const placeholderImage = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop";
 
-      // Add course to Firestore
+      // 2. Data Cleaning: Ensure strings are trimmed and free of accidental double quotes
+      const cleanTitle = formData.title.replace(/^"|"$/g, '').trim();
+      const cleanDescription = formData.description.replace(/^"|"$/g, '').trim();
+
+      // 3. Save to Firestore
       await addDoc(collection(db, COLLECTIONS.COURSES), {
-        title,
-        description,
-        category,
-        level,
-        duration,
-        imageUrl,
-        createdBy: auth.currentUser.uid,
+        title: cleanTitle,
+        description: cleanDescription,
+        category: formData.category, // Matches your manual update to the DB
+        level: formData.level,
+        duration: formData.duration,
+        imageUrl: placeholderImage, 
+        teacherId: profile.uid,
+        teacherName: profile.name || "Instructor", // Using profile.name from updated context
         createdAt: serverTimestamp(),
       });
 
-      // Reset form
-      setTitle("");
-      setDescription("")``;
-      setCategory("");
-      setLevel("");
-      setDuration("");
-      setImage(null);
+      toast.success("Course published successfully! ✅");
+      
+      // 4. Redirect to browse courses to see the result
+      navigate("/courses");
 
-      alert("Course created successfully ✅");
     } catch (error) {
-      console.error("Create course error:", error);
-      alert("Failed to create course");
+      console.error("Firestore Error:", error);
+      toast.error("Failed to save course to database.");
     } finally {
       setLoading(false);
     }
@@ -69,50 +67,78 @@ const CreateCourse = () => {
 
   return (
     <div className={styles.container}>
-      <h2>Create Course</h2>
+      <div className={styles.header}>
+        <button onClick={() => navigate(-1)} className={styles.backBtn}>← Back</button>
+        <h2>Create New Course</h2>
+      </div>
+
       <form onSubmit={handleSubmit} className={styles.form}>
-        <input
-          type="text"
-          placeholder="Course Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <div className={styles.formGroup}>
+          <label>Course Title</label>
+          <input 
+            type="text" 
+            placeholder="e.g. Diploma in English" 
+            required 
+            value={formData.title} 
+            onChange={(e) => setFormData({...formData, title: e.target.value})} 
+          />
+        </div>
 
-        <textarea
-          placeholder="Course Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div className={styles.formGroup}>
+          <label>Description</label>
+          <textarea 
+            placeholder="What will students learn in this course?" 
+            required 
+            rows="4"
+            value={formData.description} 
+            onChange={(e) => setFormData({...formData, description: e.target.value})} 
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
+        <div className={styles.row}>
+          <div className={styles.formGroup}>
+            <label>Category</label>
+            <select 
+              value={formData.category} 
+              onChange={(e) => setFormData({...formData, category: e.target.value})}
+            >
+              <option value="Information Technology">Information Technology</option>
+              <option value="Business Management">Business Management</option>
+              <option value="Language Arts">Language Arts</option>
+              <option value="Science">Science</option>
+            </select>
+          </div>
 
-        <input
-          type="text"
-          placeholder="Level (Beginner/Intermediate/Advanced)"
-          value={level}
-          onChange={(e) => setLevel(e.target.value)}
-        />
+          <div className={styles.formGroup}>
+            <label>Level</label>
+            <select 
+              value={formData.level} 
+              onChange={(e) => setFormData({...formData, level: e.target.value})}
+            >
+              <option value="Diploma">Diploma</option>
+              <option value="HND">HND</option>
+              <option value="Undergraduate">Undergraduate</option>
+              <option value="Postgraduate">Postgraduate</option>
+            </select>
+          </div>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Duration (e.g., 4 weeks)"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-        />
+        <div className={styles.formGroup}>
+          <label>Duration (e.g. 1 Year)</label>
+          <input 
+            type="text" 
+            placeholder="How long is this course?" 
+            value={formData.duration} 
+            onChange={(e) => setFormData({...formData, duration: e.target.value})} 
+          />
+        </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
-        />
+        <div className={styles.infoNote}>
+          ℹ️ Image upload is currently disabled. A default cover image will be used.
+        </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Creating..." : "Create Course"}
+        <button type="submit" className={styles.submitBtn} disabled={loading}>
+          {loading ? "Publishing..." : "Publish Course"}
         </button>
       </form>
     </div>

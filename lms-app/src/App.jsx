@@ -1,111 +1,63 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import ForgotPassword from "./pages/ForgotPassword";
+// Context
+import { AuthProvider, useAuth } from "./context/authContext";
 
+// Components & Layout
+import MainLayout from "./components/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import TeacherRoute from "./components/TeacherRoute";
+
+// Pages
+import SignIn from "./pages/SignIn"; 
 import Dashboard from "./pages/Dashboard";
 import CreateCourse from "./pages/courses/CreateCourse";
 import CourseList from "./pages/courses/CourseList";
+import CourseDetails from "./pages/courses/CourseDetails";
 import GenerateCertificate from "./pages/certificates/GenerateCertificate";
-import StudentProgress from "./pages/StudentProgress";
 
-import { useAuth } from "./context/authContext";
+// Small component to handle the smart redirect at the root
+const RootRedirect = () => {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <Navigate to="/dashboard" replace /> : <Navigate to="/signin" replace />;
+};
 
-function ProtectedRoute({ children }) {
-  const { profile, loading } = useAuth();
-
-  if (loading) return null; // wait until auth finishes
-  if (!profile) return <Navigate to="/signin" replace />; // redirect if not logged in
-
-  return children;
-}
-
-function PublicRoute({ children }) {
-  const { profile, loading } = useAuth();
-
-  if (loading) return null; // wait until auth finishes
-  if (profile) return <Navigate to="/dashboard" replace />; // redirect if already logged in
-
-  return children;
-}
-
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/signin"
-          element={
-            <PublicRoute>
-              <SignIn />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <SignUp />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <ForgotPassword />
-            </PublicRoute>
-          }
-        />
+    <AuthProvider>
+      <Router>
+        <Toaster position="top-center" reverseOrder={false} />
+        
+        <Routes>
+          {/* Public Route */}
+          <Route path="/signin" element={<SignIn />} />
+          
+          {/* Protected Routes (Authenticated Users) */}
+          <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+            {/* Direct Dashboard Path */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            
+            {/* Matches the link in your Sidebar.jsx */}
+            <Route path="/all-courses" element={<CourseList />} />
+            
+            <Route path="/course/:courseId" element={<CourseDetails />} />
+            <Route path="/generate-certificate/:courseId" element={<GenerateCertificate />} />
+            
+            {/* Teacher Only Routes */}
+            <Route element={<TeacherRoute />}>
+              <Route path="/manage-courses" element={<CourseList />} />
+              <Route path="/create-course" element={<CreateCourse />} />
+            </Route>
+          </Route>
 
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/courses"
-          element={
-            <ProtectedRoute>
-              <CourseList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/courses/create"
-          element={
-            <ProtectedRoute>
-              <CreateCourse />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/certificates/:courseId"
-          element={
-            <ProtectedRoute>
-              <GenerateCertificate />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/student-progress"
-          element={
-            <ProtectedRoute>
-              <StudentProgress />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* --- Default --- */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Smart Redirects */}
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="*" element={<RootRedirect />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
-
-export default App;
