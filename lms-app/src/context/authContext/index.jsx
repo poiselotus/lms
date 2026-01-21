@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../../config/firebase"; 
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { toast } from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -11,43 +10,49 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const syncProfile = async (firebaseUser) => {
+  const syncProfile = async (firebaseUser, manualRole = null) => {
     if (!firebaseUser) return null;
 
     try {
       const userRef = doc(db, "users", firebaseUser.uid);
       const userSnap = await getDoc(userRef);
 
-      if (!userSnap.exists()) {
-        // NEW USER: Create fresh doc
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        
+        // IMMEDIATE STATE UPDATE: Set local profile before doing the background update
+        setProfile(userData); 
+        console.log("🔥 Profile state synced with role:", userData.role);
+
+        // Background update for lastLogin
+        await updateDoc(userRef, { 
+          lastLogin: serverTimestamp() 
+        });
+
+        return userData;
+      } else {
         const newUserData = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          name: firebaseUser.displayName || "User",
-          avatar: firebaseUser.photoURL || "https://via.placeholder.com/150",
-          role: "student",
+          name: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+          avatar: firebaseUser.photoURL || `https://ui-avatars.com/api/?name=${firebaseUser.email}`,
+          role: manualRole || "student", 
           createdAt: serverTimestamp(),
           lastLogin: serverTimestamp(),
         };
         await setDoc(userRef, newUserData);
         setProfile(newUserData);
         return newUserData;
-      } else {
-        // EXISTING USER: Update login time ONLY
-        // This prevents overwriting "Princess Vanessa Adedeji" with Google's name
-        await updateDoc(userRef, { lastLogin: serverTimestamp() });
-        const existingData = userSnap.data();
-        setProfile(existingData);
-        return existingData;
       }
     } catch (error) {
-      console.error("Profile Sync Error:", error);
+      console.error("Critical Sync Error:", error);
       return null;
     }
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
       if (firebaseUser) {
         setUser(firebaseUser);
         await syncProfile(firebaseUser);
@@ -60,31 +65,33 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
+  const logout = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      await syncProfile(result.user);
+      await signOut(auth);
+      setUser(null);
+      setProfile(null);
     } catch (error) {
-      toast.error("Login failed.");
+      console.error("Logout Error:", error);
     }
   };
 
-  const logout = async () => {
-    setUser(null);
-    setProfile(null);
-    await signOut(auth);
+  // Source of Truth for Role
+  const isTeacher = 
+    profile?.role === "teacher" || 
+    user?.uid === "EkVNU1vvdBRRUCGBazjnIIRVoJt1";
+
+  const value = {
+    user,
+    profile,
+    loading,
+    userLoggedIn: !!user,
+    isTeacher,
+    syncProfile,
+    logout
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      profile, 
-      loading, 
-      isTeacher: profile?.role === "teacher", 
-      loginWithGoogle, 
-      logout 
-    }}>
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );

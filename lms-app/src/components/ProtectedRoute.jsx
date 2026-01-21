@@ -1,34 +1,24 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/authContext"; // Adjusted path to your context
 
-/**
- * ProtectedRoute ensures only authenticated users can access specific pages.
- * It waits for the Firebase Auth + Firestore Sync to finish before deciding.
- */
-const ProtectedRoute = ({ children }) => {
+export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
 
-  // 1. While Firebase is checking the session and fetching the profile, show nothing or a spinner
+  // If Firebase is still checking the auth state, show nothing or a spinner
+  // This prevents the "flash" of the login page for logged-in users
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <p>Authenticating...</p>
       </div>
     );
   }
 
-  // 2. If no user is logged in after loading finishes, redirect to Sign In
+  // If not loading and no user is found, send them to Sign In
   if (!user) {
     return <Navigate to="/signin" replace />;
   }
 
-  /**
-   * 3. If user is authenticated:
-   * - If used as a wrapper: <ProtectedRoute><Page /></ProtectedRoute> -> return children
-   * - If used as a layout: <Route element={<ProtectedRoute />} /> -> return <Outlet />
-   */
-  return children ? children : <Outlet />;
-};
-
-export default ProtectedRoute;
+  return children;
+}
