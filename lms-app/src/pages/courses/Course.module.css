@@ -1,0 +1,185 @@
+/* Container for the page */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Header styling */
+.headerArea {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 15px;
+}
+
+.headerArea h2 {
+  margin: 0;
+  color: #061a3a; /* Oxford Navy */
+  font-size: 1.8rem;
+}
+
+.headerArea p {
+  color: #64748b;
+  margin: 5px 0 0;
+}
+
+/* The Grid System */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+/* The Course Card */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden; /* Fixes image overflow */
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Containment Logic */
+.imageWrapper {
+  width: 100%;
+  height: 200px; /* Fixed height for consistency */
+  overflow: hidden;
+  position: relative;
+  background: #f1f5f9;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures image fills space without stretching */
+  display: block;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e2e8f0;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* Badge overlaying the image */
+.badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #0b6a6f; /* Teal */
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+/* Card Content */
+.cardBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.cardBody h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.25rem;
+  color: #061a3a;
+  line-height: 1.3;
+}
+
+.desc {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Shows exactly 2 lines of text */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Metadata (Level and Duration) */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Button Container */
+.actions {
+  margin-top: auto; /* Keeps buttons aligned at the bottom */
+}
+
+/* Enrollment & Action Buttons */
+.enrollBtn, .enrolledBtn, .deleteBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.enrollBtn {
+  background: #0b6a6f;
+  color: white;
+}
+
+.enrollBtn:hover {
+  background: #084d50;
+}
+
+.enrolledBtn {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.deleteBtn {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.deleteBtn:hover {
+  background: #fecaca;
+}
+
+/* Empty State */
+.empty {
+  text-align: center;
+  padding: 50px;
+  color: #64748b;
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+}

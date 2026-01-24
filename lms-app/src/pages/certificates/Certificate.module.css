@@ -1,0 +1,68 @@
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.certificateFrame {
+  background: #fff;
+  padding: 40px;
+  border: 15px solid #061a3a; /* Dark Oxford Blue */
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.innerFrame {
+  border: 2px solid #0b6a6f; /* Teal accent */
+  padding: 40px;
+}
+
+.studentName {
+  font-family: 'Times New Roman', serif;
+  font-size: 2.5rem;
+  color: #061a3a;
+  margin: 20px 0;
+  text-decoration: underline;
+}
+
+.subtext {
+  font-style: italic;
+  color: #666;
+}
+
+.footer {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  font-weight: bold;
+}
+
+.mainButton {
+  background: #0b6a6f;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.printBtn {
+  background: #061a3a;
+  color: white;
+  margin-right: 10px;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+/* Hide everything except the certificate when printing */
+@media print {
+  body * { visibility: hidden; }
+  .certificateFrame, .certificateFrame * { visibility: visible; }
+  .certificateFrame { position: absolute; left: 0; top: 0; width: 100%; }
+}
