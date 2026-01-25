@@ -1,91 +1,68 @@
-import { useState } from "react";
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/authContext"; // Fixed: Added missing import
+
+// Styles and Assets
 import styles from "./Sidebar.module.css";
-import oxfordtrans1 from "../images/oxfordtrans1.png";
+import oxfordLogo from "../images/oxfordtrans1.png";
 import homeIcon from "../images/home.png";
-import onlineLearningIcon from "../images/onlinelearning.png";
-import paperIcon from "../images/paper.png";
-import scheduleIcon from "../images/schedule.png";
-import settingIcon from "../images/setting.png";
-import chatIcon from "../images/chat.png";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import browseIcon from "../images/onlinelearning.png";
 
 export default function Sidebar() {
-  const [open, setOpen] = useState(true);
-  const { profile, loading, signOut } = useAuth();
-  const navigate = useNavigate();
+    const { profile, loading, isTeacher } = useAuth();
 
-  if (loading) return null;
+    // Guard: Prevent crash while loading
+    if (loading) return <div className={styles.sidebar}></div>;
 
-  const displayName = profile?.name
-    ? profile.name.split(" ")[0]
-    : "Student";
+    const fullName = profile?.name || "User";
+    const firstName = fullName.split(" ")[0];
+    
+    // Fallback avatar using initials
+    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00173d&color=fff`;
 
-  const profilePic =
-    profile?.photoURL || "https://via.placeholder.com/150";
+    return (
+        <aside className={styles.sidebar}>
+            <div className={styles.top}>
+                <img src={oxfordLogo} alt="Oxford Academy" className={styles.logo} />
+            </div>
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/signin");
-  };
+            <div className={styles.profileBox}>
+                <img 
+                    src={profile?.avatar && profile.avatar !== "photoURL" ? profile.avatar : fallback} 
+                    alt="User" 
+                    className={styles.avatar} 
+                    onError={(e) => { e.target.src = fallback; }}
+                />
+                <div className={styles.info}>
+                    <p className={styles.welcomeText}>Hi, {firstName}</p>
+                    <small>
+                        {isTeacher ? "Teacher" : "Student"} ID: {profile?.uid?.slice(0,6).toUpperCase() || "---"}
+                    </small>
+                </div>
+            </div>
 
-  return (
-    <aside className={`${styles.sidebar} ${!open ? styles.closed : ""}`}>
-      <div className={styles.top}>
-        <img src={oxfordtrans1} alt="Oxford Logo" className={styles.logo} />
-        <button onClick={() => setOpen(!open)} className={styles.hamburger}>
-          ☰
-        </button>
-      </div>
+            <nav className={styles.nav}>
+                <NavLink to="/dashboard" className={({ isActive }) => isActive ? styles.active : styles.link}>
+                    <img src={homeIcon} alt="" /> Home
+                </NavLink>
+                
+                <NavLink to="/all-courses" className={({ isActive }) => isActive ? styles.active : styles.link}>
+                    <img src={browseIcon} alt="" /> Browse Courses
+                </NavLink>
 
-      {/* Profile */}
-      <div className={styles.profile}>
-        <img src={profilePic} alt="avatar" className={styles.avatar} />
-        <div className={styles.info}>
-          <p className={styles.name}>Hi, {displayName}</p>
-          <small className={styles.id}>{profile?.studentId || "N/A"}</small>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className={styles.nav}>
-        <NavLink to="/dashboard">
-          <img src={homeIcon} className={styles.icons} />
-          Home
-        </NavLink>
-
-        <NavLink to="/courses">
-          <img src={onlineLearningIcon} className={styles.icons} />
-          My Courses
-        </NavLink>
-
-        <NavLink to="/assignments">
-          <img src={paperIcon} className={styles.icons} />
-          Assignments
-        </NavLink>
-
-        <NavLink to="/timetable">
-          <img src={scheduleIcon} className={styles.icons} />
-          Time Table
-        </NavLink>
-
-        <NavLink to="/forum">
-          <img src={chatIcon} className={styles.icons} />
-          Forum
-        </NavLink>
-
-        <NavLink to="/settings">
-          <img src={settingIcon} className={styles.icons} />
-          Settings
-        </NavLink>
-      </nav>
-
-      {/* Logout  */}
-      <div className={styles.logoutWrapper}>
-        <button onClick={handleLogout} className={styles.logoutBtn}>
-          Logout
-        </button>
-      </div>
-    </aside>
-  );
+                {/* Teacher Only Section: Only Marcel sees this */}
+                {isTeacher && (
+                    <div className={styles.teacherSection}>
+                        <div className={styles.divider}>Teacher Panel</div>
+                        <NavLink to="/create-course" className={({ isActive }) => isActive ? styles.active : styles.link}>
+                            <span style={{ marginRight: '10px' }}>➕</span> Create Course
+                        </NavLink>
+                        <NavLink to="/manage-courses" className={({ isActive }) => isActive ? styles.active : styles.link}>
+                            <span style={{ marginRight: '10px' }}>🛠️</span> Manage Courses
+                        </NavLink>
+                    </div>
+                )}
+            </nav>
+        </aside>
+    );
 }

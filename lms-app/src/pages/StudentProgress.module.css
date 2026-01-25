@@ -1,0 +1,80 @@
+.container {
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.header {
+  font-size: 28px;
+  font-weight: 700;
+  color: #00173d; /* Dark Oxford Blue */
+}
+
+.welcome {
+  color: #64748b;
+  font-size: 16px;
+  margin-top: -15px;
+}
+
+.card {
+  background: #ffffff;
+  padding: 20px 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardHeader {
+  font-weight: 700;
+  color: #0b6a6f; /* Teal accent */
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.progressBar {
+  background: #f1f5f9;
+  height: 12px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.progress {
+  background: linear-gradient(90deg, #0b6a6f, #34d399); /* Teal to Emerald Gradient */
+  height: 100%;
+  border-radius: 20px;
+  transition: width 1s ease-in-out;
+}
+
+.progressText {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  align-self: flex-end;
+}
+
+.assignment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 4px solid #0b6a6f;
+  margin-bottom: 5px;
+}
+
+.status {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #061a3a;
+  background: #e0f2f1;
+  padding: 4px 10px;
+  border-radius: 6px;
+}

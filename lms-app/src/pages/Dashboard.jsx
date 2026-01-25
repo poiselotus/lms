@@ -1,41 +1,64 @@
-import styles from './Dashboard.module.css' 
-import Sidebar from '../components/Sidebar' 
-import Header from '../components/Header' 
-import Card from '../components/Card' 
-import Progress from '../components/Progress'
-import banner from "../images/banner.png"
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext/index";
+import styles from "./Dashboard.module.css";
 
-export default function Dashboard() { 
-    return (  
-        <div className={styles.container}> 
-        <Sidebar />
+export default function Dashboard() {
+  const { profile, isTeacher, loading } = useAuth();
+  const navigate = useNavigate();
 
-        <main className={styles.main}>
-            <Header />
+  if (loading) return <div className={styles.container}>Loading Oxford Portal...</div>;
 
-            <div className={styles.wrapper}>
-                <img
-                    src={banner}
-                    alt="Oxford Biology PhD Scholarship"
-                    className={styles.banner}
-                />
-            </div>
+  return (
+    <div className={styles.container}>
+      <header className={styles.welcomeHeader}>
+        <h1>Welcome, {profile?.name || "User"}</h1>
+        <div className={styles.badgeContainer}>
+          <span className={isTeacher ? styles.teacherBadge : styles.studentBadge}>
+            {isTeacher ? "PROCTOR / TEACHER" : "STUDENT"}
+          </span>
+        </div>
+      </header>
 
-            <section className={styles.cards}>
-                <Card title="Diploma in English" code="OXF/ENG/01" />
-                <Card title="Diploma in IT" code="OXF/DIT/01" />
-                <Card title="HND in Computing" code="OXF/HND/01" />
-            </section>
+      {/* Primary Teacher Controls */}
+      {isTeacher && (
+        <section className={styles.statsOverview}>
+          <div className={styles.statCard}>
+            <h4>Total Courses</h4>
+            <p>0</p>
+          </div>
+          <div className={styles.statCard}>
+            <h4>Active Students</h4>
+            <p>0</p>
+          </div>
+        </section>
+      )}
 
-            <section className={styles.progressGrid}>
-                <Progress label="Module Progress" value="90%" />
-                <Progress label="Assignment Progress" value="10%" />
-                <Progress label="Attendance Progress" value="97%" />
-                <Progress label="Course Progress" value="50%" />
-            </section>
-        </main>
+      <div className={styles.mainGrid}>
+        {/* Course Section */}
+        <section className={styles.contentSection}>
+          <h2>{isTeacher ? "Curriculum Management" : "My Learning Path"}</h2>
+          <div className={styles.emptyState}>
+            <p>{isTeacher ? "You haven't created any courses yet." : "You aren't enrolled in any courses."}</p>
+            {isTeacher ? (
+              <button 
+                className={styles.actionBtn} 
+                onClick={() => navigate("/create-course")}
+              >
+                Create Your First Course
+              </button>
+            ) : (
+              <Link to="/all-courses" className={styles.browseLink}>Explore Catalog</Link>
+            )}
+          </div>
+        </section>
+
+        {/* Recent Activity or Notifications */}
+        <aside className={styles.sidebarInfo}>
+          <h3>Recent Activity</h3>
+          <p className={styles.mutedText}>No new notifications.</p>
+        </aside>
+      </div>
     </div>
-
-    ) 
-
+  );
 }
