@@ -1,0 +1,74 @@
+.forumContainer {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 30px;
+}
+
+.messageList {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding-right: 10px;
+}
+
+.message {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border-left: 4px solid #cbd5e1;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.teacherMsg {
+  border-left-color: #0b6a6f; /* Teal for teachers */
+  background: #f0f9f9;
+}
+
+.msgHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.author {
+  font-weight: 700;
+  color: #061a3a;
+  font-size: 0.9rem;
+}
+
+.roleTag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  background: #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.teacherMsg .roleTag {
+  background: #0b6a6f;
+  color: white;
+}
+
+.inputArea textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  resize: none;
+  font-family: inherit;
+}
+
+.inputArea button {
+  margin-top: 10px;
+  background: #0b6a6f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}

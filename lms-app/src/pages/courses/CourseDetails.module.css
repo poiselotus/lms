@@ -1,0 +1,194 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: #0b6a6f;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+
+.backBtn:hover {
+  transform: translateX(-5px);
+}
+
+/* Hero Section */
+.heroSection {
+  display: flex;
+  background: #061a3a; /* Dark Navy */
+  border-radius: 20px;
+  overflow: hidden;
+  color: white;
+  margin-bottom: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.heroImage {
+  width: 45%;
+  height: 350px;
+  object-fit: cover;
+}
+
+.heroContent {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+}
+
+.badge {
+  background: #0b6a6f;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.level {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Main Content Layout */
+.mainContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+}
+
+.descriptionSide h2 {
+  color: #061a3a;
+  margin-bottom: 20px;
+}
+
+.description {
+  line-height: 1.8;
+  color: #475569;
+  font-size: 1.1rem;
+  white-space: pre-wrap; 
+  margin-bottom: 40px;
+}
+
+/* Forum Section Spacing */
+.forumSection {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 30px;
+  margin-top: 20px;
+}
+
+/* Sidebar Info Card */
+.infoCard {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  position: sticky;
+  top: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.infoCard h3 {
+  margin-top: 0;
+  color: #061a3a;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.infoCard p {
+  margin: 12px 0;
+  color: #64748b;
+}
+
+.infoCard strong {
+  color: #334155;
+}
+
+/* Buttons */
+.enrollBtn, .enrolledBtn {
+  width: 100%;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 20px;
+  transition: all 0.2s;
+}
+
+.enrollBtn {
+  background: #0b6a6f;
+  color: white;
+  cursor: pointer;
+}
+
+.enrollBtn:hover {
+  background: #084d50;
+  transform: translateY(-2px);
+}
+
+.enrolledBtn {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.successNote {
+  font-size: 0.85rem;
+  color: #0b6a6f;
+  text-align: center;
+  margin-top: 12px;
+  font-weight: 600;
+  background: #f0fdfa;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Loading & Errors */
+.loading, .error {
+  text-align: center;
+  padding: 100px;
+  font-size: 1.2rem;
+  color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .heroSection {
+    flex-direction: column;
+  }
+  .heroImage {
+    width: 100%;
+    height: 250px;
+  }
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    font-size: 1.8rem;
+  }
+  .infoCard {
+    position: static;
+  }
+}
