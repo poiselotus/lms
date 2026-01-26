@@ -38,6 +38,7 @@
     transition: all 0.3s ease;
 }
 
+/* Avatar */
 .avatar {
     width: 70px; /* slightly bigger */
     height: 70px;
@@ -47,6 +48,7 @@
     margin-bottom: 12px;
 }
 
+/* Profile text */
 .info {
     text-align: center;
 }
@@ -70,6 +72,12 @@
     width: 100%;
 }
 
+/* Hide text when collapsed */
+.closed .info {
+    display: none;
+}
+
+/* Navigation */
 .nav a {
     display: flex;
     align-items: center;
