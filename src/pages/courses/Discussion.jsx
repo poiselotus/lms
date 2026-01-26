@@ -6,7 +6,9 @@ import {
   where, 
   orderBy, 
   onSnapshot, 
-  serverTimestamp 
+  serverTimestamp,
+  deleteDoc,
+  doc 
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useAuth } from "../../context/authContext";
@@ -19,7 +21,9 @@ const Discussion = ({ courseId }) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // REAL-TIME LISTENER: This makes messages appear immediately
+  // Check if current user is a moderator (Teacher or specific ID)
+  const isModerator = profile?.role === "teacher" || user?.uid === "Pd6bPImud5e68yrQeKUrPNgoj8x2";
+
   useEffect(() => {
     if (!courseId) return;
 
@@ -41,7 +45,7 @@ const Discussion = ({ courseId }) => {
       setLoading(false);
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [courseId]);
 
   const handlePost = async (e) => {
@@ -53,13 +57,22 @@ const Discussion = ({ courseId }) => {
         courseId,
         userId: user.uid,
         userName: profile?.name || "Student",
-        userImage: profile?.avatar || "", // If you have user photos
         text: newMessage,
         createdAt: serverTimestamp()
       });
-      setNewMessage(""); // Clear input after sending
+      setNewMessage(""); 
     } catch (error) {
       toast.error("Could not post message");
+    }
+  };
+
+  const handleDeleteMessage = async (msgId) => {
+    if (!window.confirm("Delete this message?")) return;
+    try {
+      await deleteDoc(doc(db, "discussions", msgId));
+      toast.success("Message removed");
+    } catch (error) {
+      toast.error("Failed to delete message");
     }
   };
 
@@ -74,8 +87,25 @@ const Discussion = ({ courseId }) => {
           messages.map((msg) => (
             <div key={msg.id} className={msg.userId === user.uid ? styles.myMsg : styles.otherMsg}>
               <div className={styles.msgHeader}>
-                <strong>{msg.userName}</strong>
-                <span>{msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <div className={styles.userInfo}>
+                  <strong>{msg.userName}</strong>
+                  {/* Show "Teacher" tag if applicable */}
+                  {msg.role === "teacher" && <span className={styles.teacherTag}>Staff</span>}
+                </div>
+                <div className={styles.msgMeta}>
+                  <span>{msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  
+                  {/* MODERATION BUTTON: Visible to you and collaborators */}
+                  {isModerator && (
+                    <button 
+                      className={styles.deleteMsgBtn} 
+                      onClick={() => handleDeleteMessage(msg.id)}
+                      title="Delete Message"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               </div>
               <p>{msg.text}</p>
             </div>
@@ -89,8 +119,8 @@ const Discussion = ({ courseId }) => {
         <textarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Ask a question or share a thought..."
-          rows="3"
+          placeholder="Ask a question..."
+          rows="2"
         />
         <button type="submit" disabled={!newMessage.trim()}>
           Post to Forum
