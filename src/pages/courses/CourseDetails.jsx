@@ -1,139 +1,151 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, collection, addDoc, query, where, getDocs, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, query, where, addDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { COLLECTIONS } from "../../config/firestoreCollections";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-hot-toast";
-import Discussion from "./Discussion"; 
+import Discussion from "./Discussion"; // Integrated your Discussion component
 import styles from "./CourseDetails.module.css";
 
-export default function CourseDetails() {
+const CourseDetails = () => {
   const { courseId } = useParams();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const { profile, user } = useAuth();
-  
+
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [enrolling, setEnrolling] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [enrollmentId, setEnrollmentId] = useState(null);
 
   useEffect(() => {
-    const fetchCourseAndEnrollment = async () => {
+    const fetchDetails = async () => {
       try {
-        const docRef = doc(db, COLLECTIONS.COURSES, courseId);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          setCourse(docSnap.data());
+        // Fetch course details
+        const courseDoc = await getDoc(doc(db, COLLECTIONS.COURSES, courseId));
+        if (courseDoc.exists()) {
+          setCourse({ id: courseDoc.id, ...courseDoc.data() });
         }
 
-        if (user?.uid) {
+        // Check user enrollment and completion status
+        if (user) {
           const q = query(
             collection(db, "enrollments"),
-            where("courseId", "==", courseId),
-            where("studentId", "==", user.uid)
+            where("studentId", "==", user.uid),
+            where("courseId", "==", courseId)
           );
-          const querySnapshot = await getDocs(q);
-          setIsEnrolled(!querySnapshot.empty);
-        }
+          const enrollSnap = await getDocs(q);
 
-      } catch (error) {
-        console.error("Error fetching data:", error);
+          if (!enrollSnap.empty) {
+            setIsEnrolled(true);
+            const enrollData = enrollSnap.docs[0].data();
+            setEnrollmentId(enrollSnap.docs[0].id);
+            setIsCompleted(enrollData.status === "completed");
+          }
+        }
+      } catch (err) {
+        console.error("Fetch Error:", err);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchCourseAndEnrollment();
-  }, [courseId, user?.uid]);
+    fetchDetails();
+  }, [courseId, user]);
 
   const handleEnroll = async () => {
-    if (!user) return toast.error("Please log in to enroll");
-    
-    setEnrolling(true);
+    if (!user) return navigate("/signin");
     try {
-      await addDoc(collection(db, "enrollments"), {
+      const newEnroll = await addDoc(collection(db, "enrollments"), {
         studentId: user.uid,
-        studentName: profile?.name || "Student",
         courseId: courseId,
-        courseTitle: course.title,
-        courseImage: course.imageUrl,
-        enrolledAt: serverTimestamp(),
-        progress: 0,
-        status: "active"
+        status: "active",
+        enrolledAt: new Date(),
       });
-
+      setEnrollmentId(newEnroll.id);
       setIsEnrolled(true);
-      toast.success("Successfully enrolled!");
-    } catch (error) {
+      toast.success("Welcome to the course!");
+    } catch (err) {
       toast.error("Enrollment failed");
-    } finally {
-      setEnrolling(false);
     }
   };
 
-  if (loading) return <div className={styles.loading}>Loading Course...</div>;
-  if (!course) return <div className={styles.error}>Course not found.</div>;
+  const handleComplete = async () => {
+    try {
+      await updateDoc(doc(db, "enrollments", enrollmentId), {
+        status: "completed",
+        completedAt: new Date(),
+      });
+      setIsCompleted(true);
+      toast.success("Course marked as completed!");
+    } catch (err) {
+      toast.error("Error updating status");
+    }
+  };
+
+  if (loading) return <div className={styles.container}>Loading Oxford Portal...</div>;
+  if (!course) return <div className={styles.container}>Course not found.</div>;
 
   return (
     <div className={styles.container}>
-      <button onClick={() => navigate(-1)} className={styles.backBtn}>← Back</button>
-      
+      <button className={styles.backBtn} onClick={() => navigate(-1)}>
+        ← Back to Courses
+      </button>
+
       <div className={styles.heroSection}>
         <img src={course.imageUrl} alt={course.title} className={styles.heroImage} />
         <div className={styles.heroContent}>
-          <span className={styles.badge}>{course.category}</span>
-          <h1 className={styles.title}>{course.title}</h1>
-          <p className={styles.level}>Academic Level: <strong>{course.level}</strong></p>
+          <h1>{course.title}</h1>
+          <p>Academic Level: Diploma</p>
         </div>
       </div>
 
       <div className={styles.mainContent}>
-        <div className={styles.descriptionSide}>
-          <section className={styles.about}>
+        <div className={styles.courseDescription}>
+          <section className={styles.aboutSection}>
             <h2>About this Course</h2>
-            <p className={styles.description}>{course.description}</p>
+            <p>{course.description}</p>
           </section>
 
-          <section className={styles.forumSection}>
-            <Discussion courseId={courseId} />
-          </section>
+          {/* DISCUSSION FORUM - Only visible if enrolled */}
+          {isEnrolled && (
+            <section className={styles.discussionSection}>
+              <Discussion courseId={courseId} />
+            </section>
+          )}
         </div>
 
-        <div className={styles.infoSide}>
+        <aside>
           <div className={styles.infoCard}>
             <h3>Course Progress</h3>
-            <p><strong>Duration:</strong> {course.duration || "N/A"}</p>
-            <p><strong>Instructor:</strong> {course.teacherName}</p>
-            
-            {profile?.role === "student" && (
-              <div className={styles.actionArea}>
-                {!isEnrolled ? (
-                  <button 
-                    className={styles.enrollBtn} 
-                    onClick={handleEnroll}
-                    disabled={enrolling}
-                  >
-                    {enrolling ? "Enrolling..." : "Enroll Now"}
-                  </button>
-                ) : (
-                  <button 
-                    className={styles.completeBtn} 
-                    onClick={() => navigate(`/generate-certificate/${courseId}`)}
-                  >
-                    Complete & Get Certificate
-                  </button>
-                )}
-              </div>
-            )}
+            <p><strong>Duration:</strong> {course.duration || "6 weeks"}</p>
+            <p><strong>Instructor:</strong> {course.instructor || "Oxford Faculty"}</p>
 
-            {isEnrolled && (
-                <p className={styles.successNote}>✅ You have joined this course.</p>
+            {!isEnrolled ? (
+              <button className={styles.enrollBtn} onClick={handleEnroll}>
+                Enroll Now
+              </button>
+            ) : !isCompleted ? (
+              <button className={styles.completeBtn} onClick={handleComplete}>
+                Complete Course
+              </button>
+            ) : (
+              <>
+                <p className={styles.successNote}>✅ Course Completed</p>
+                <button 
+                  className={styles.completeBtn} 
+                  style={{ background: "#ffb800", color: "#061a3a" }}
+                  onClick={() => navigate(`/generate-certificate/${courseId}`)}
+                >
+                  Generate Certificate
+                </button>
+              </>
             )}
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
-}
+};
+
+export default CourseDetails;

@@ -14,9 +14,6 @@ const CourseList = () => {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
 
-  // Debugging: Remove this once you see the button
-  console.log("Current User Role:", profile?.role);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -38,8 +35,8 @@ const CourseList = () => {
   }, [user]);
 
   const handleDelete = async (e, id) => {
-    e.stopPropagation(); 
-    if (!window.confirm("Delete this course permanently?")) return;
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
       await deleteDoc(doc(db, COLLECTIONS.COURSES, id));
       setCourses(courses.filter(c => c.id !== id));
@@ -51,17 +48,30 @@ const CourseList = () => {
 
   if (loading) return <div className={styles.loading}>Loading Curriculum...</div>;
 
+  // Check if user is a teacher or the specific collaborator ID
+  const canManage = profile?.role === "teacher" || profile?.uid === "Pd6bPImud5e68yrQeKUrPNgoj8x2";
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1>Available Courses</h1>
+        <div className={styles.headerTop}>
+          <h1>Available Courses</h1>
+          {/* CREATE COURSE BUTTON - Visible only to Teachers */}
+          {canManage && (
+            <button 
+              className={styles.createBtn} 
+              onClick={() => navigate("/create-course")}
+            >
+              + Create New Course
+            </button>
+          )}
+        </div>
         <p>Explore our world-class curriculum</p>
       </header>
 
       <div className={styles.grid}>
         {courses.map((course) => {
           const isEnrolled = enrolledIds.includes(course.id);
-          const isTeacher = profile?.role === "teacher";
 
           return (
             <div key={course.id} className={styles.card} onClick={() => navigate(`/course/${course.id}`)}>
@@ -73,20 +83,19 @@ const CourseList = () => {
               <div className={styles.cardContent}>
                 <h3 className={styles.courseTitle}>{course.title}</h3>
                 <p className={styles.description}>
-                  {course.description?.substring(0, 65)}...
+                  {course.description?.substring(0, 60)}...
                 </p>
                 <div className={styles.meta}>
                   <span>🎓 Diploma</span>
                   <span>⏱️ {course.duration}</span>
                 </div>
                 
-                {/* BUTTON GROUP AREA */}
                 <div className={styles.btnGroup}>
                   <button className={styles.enrollBtn} disabled={isEnrolled}>
                     {isEnrolled ? "Already Enrolled" : "Enroll Now"}
                   </button>
                   
-                  {isTeacher && (
+                  {canManage && (
                     <button 
                       className={styles.deleteBtn} 
                       onClick={(e) => handleDelete(e, course.id)}
